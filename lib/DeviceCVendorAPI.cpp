@@ -1,6 +1,8 @@
 // Copyright (c) 2020 Nicholas Corgan
 // SPDX-License-Identifier: BSL-1.0
 
+#include <SoapySDR/Registry.hpp>
+
 #include "DeviceCVendorAPI.hpp"
 #include "TypeHelpers.hpp"
 
@@ -39,4 +41,32 @@ SoapySDR::Kwargs SoapySDR::DeviceCVendorAPI::getHardwareInfo(void) const
     }
 
     return SoapySDR::Device::getHardwareInfo();
+}
+
+//
+// Registration
+//
+
+std::vector<SoapySDR::Kwargs> find_driverCVendorAPI(const SoapySDR::Kwargs& kwargs, const SoapySDRDevice_CFunctions& cFunctions)
+{
+    auto kwargsC = toKwargs(kwargs);
+
+    size_t numDevices;
+    auto* devsC = cFunctions.find(&kwargsC, &numDevices);
+    auto devsCpp = toKwargsList(devsC, numDevices);
+
+    SoapySDRKwargsList_clear(devsC, numDevices);
+    SoapySDRKwargs_clear(&kwargsC);
+
+    return devsCpp;
+}
+
+SoapySDR::Device* make_driverCVendorAPI(const SoapySDR::Kwargs& kwargs, const SoapySDRDevice_CFunctions& cFunctions)
+{
+    auto kwargsC = toKwargs(kwargs);
+    auto* devC = cFunctions.make(&kwargsC);
+
+    SoapySDRKwargs_clear(&kwargsC);
+
+    return new SoapySDR::DeviceCVendorAPI(devC, cFunctions);
 }
