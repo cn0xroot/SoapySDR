@@ -33,6 +33,8 @@ add_library(SoapySDR SHARED
     TimeC.cpp
     ErrorsC.cpp
     FormatsC.cpp
+    #Vendor C API support sources
+    DeviceCVendorAPI.cpp
 )
 target_link_libraries(SoapySDR PUBLIC ${SoapySDR_LINKER_FLAGS})
 target_include_directories(SoapySDR PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
